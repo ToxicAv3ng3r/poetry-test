@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}
+  Пост {{ post.text|truncatechars:30 }}
+{% endblock %}
+{% load static %}
+{% load thumbnail %}
+{% block content %}
+  <div class="container py-5">
+    <div class="row">
+      <aside class="col-12 col-md-3">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Дата публикации: {{ post.pub_date|date:"d E Y"  }}
+          </li>
+            {% if post.group %}
+              <li class="list-group-item">
+                Группа: {{ post.group.title }}
+                  <a href="{% url 'posts:group_list_page' post.group.slug %}">
+                  все записи группы
+                </a>
+              </li>
+            {% endif %}
+          <li class="list-group-item">
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li class="list-group-item">
+            Всего постов автора: <span>{{ post.author.posts.count }}</span>
+          </li>
+          <li class="list-group-item">
+            <a href="{% url 'posts:profile' post.author.username%}">
+          все посты пользователя
+            </a>
+          </li>
+        </ul>
+      </aside>
+  <article class="col-12 col-md-9">
+  {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+    <img class="card-img my-2" src="{{ im.url }}">
+  {% endthumbnail %}
+    <p>
+      {{ post.text|linebreaksbr }}
+    </p>
+    <p>Понравилось: {{ post.likes.count }}</p>
+    {% if user.is_authenticated %}
+      {% if liked %}
+        <a href="{% url 'posts:dislike_post' post_id=post.id %}">
+          <img src="{% static 'img/liked.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+        </a>
+      {% else %}
+        <a href="{% url 'posts:like_post' post_id=post.id %}">
+          <img src="{% static 'img/like.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+        </a>
+      {% endif %}
+    {% endif %}
+    <p style="margin-top: 10px">
+      {% if post.author == request.user %}
+        <a class="btn btn-primary" href="{% url 'posts:post_edit' post_id=post.id %}">
+          Редактировать запись
+        </a>
+      {% endif %}
+    </p>
+
+  {% include 'posts/includes/comment_include.html' %}
+  </article>
+{% endblock %}

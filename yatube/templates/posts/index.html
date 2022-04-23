@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}
+  Последние обновления на сайте
+{% endblock %}
+{% block content %}
+{% load cache %}
+{% cache 20 index_page request.user.username page_obj.number %}
+  <div class="container py-5">
+    {% include 'posts/includes/switcher.html' %}
+    {% for post in page_obj %}
+      {% include 'posts/includes/post_include.html' with show_group=True show_author=True %}
+    {% endfor %}
+    {% include 'posts/includes/paginator.html' %}
+  </div>
+{% endcache %}
+{% endblock %}
+

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}
+  Мои подписки
+{% endblock %}
+{% block content %}
+{% load cache %}
+{% cache 20 follow_page request.user.username %}
+  <div class="container py-5">
+    {% include 'posts/includes/switcher.html' %}
+    {{ posts_count }}
+    {% for post in page_obj %}
+      {% include 'posts/includes/post_include.html' with show_group=True show_author=True %}
+    {% endfor %}
+    {% include 'posts/includes/paginator.html' %}
+  </div>
+{% endcache %}
+{% endblock %}
